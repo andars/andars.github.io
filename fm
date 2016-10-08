@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# https://github.com/camoy/fm
+# Public Domain Software
+
+extract=1
+style=0
+
+_fm_extract() {
+	case $style in
+		0) sed -n "/^---$/,/^\.\.\.$/p" | sed "1d;$ d";;
+		1) sed -n "/^---$/,/^---$/p" | sed "1d;$ d";;
+		2) sed -n "/^+++$/,/^+++$/p" | sed "1d;$ d";;
+	esac
+}
+
+_fm_strip() {
+	case $style in
+		0) sed "/^---$/,/^\.\.\.$/d";;
+		1) sed "/^---$/,/^---$/d";;
+		2) sed "/^+++$/,/^+++$/d";;
+	esac
+}
+
+while getopts 'sdp' flag; do
+	case "${flag}" in
+		s) extract=0 ;;
+		d) style=1 ;;
+		p) style=2 ;;
+	esac
+done
+
+if [ $extract -eq 1 ]
+then
+	_fm_extract
+else
+	_fm_strip
+fi
+
+exit 0

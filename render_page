@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+extract_layout() {
+    layout=$(cat $1 | sed -n "s/layout: \([a-z]*\)/\1/p")
+}
+
+# Extract the requested layout from the metadata
+extract_layout $1
+layout_file=layouts/$layout.html
+
+
+# Construct a yaml file with the content plus all other metadata
+content_yaml=$2.data
+echo "content: |" > $content_yaml
+cat $2 | sed 's/^/    /' >> $content_yaml
+cat $1 >> $content_yaml
+
+# Run mustache on the layout, passing the page content in the yaml file
+#mustache $content_yaml $layout_file
+jinja2 $layout_file $content_yaml --format yaml
+rm $content_yaml
+
