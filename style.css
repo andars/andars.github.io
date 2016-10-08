@@ -1,0 +1,137 @@
+html {
+    font-size: 1em;
+}
+
+body {
+    line-height: 1.3;
+    background-color: #fbfaf8;
+    width: 85%;
+    padding-left: 12.5%;
+    margin-left: auto;
+    margin-right: auto;
+    font: normal 14px/24px "Merriweather", Georgia, serif;
+    font-weight: 100;
+    color: #222;
+    max-width: 1500px;
+}
+
+h1 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    line-height: 1;
+    font-weight: 300;
+    font: 200 3rem "Source Sans Pro", Georgia, serif;
+}
+
+h2 {
+    margin-top: 1rem;
+    margin-bottom: 0.2rem;
+    font-size: 1.8rem;
+    line-height: 1;
+    font-weight: 400;
+    font: 200 2rem "Source Sans Pro", Georgia, serif;
+}
+
+article {
+    position: relative;
+    padding: 2rem 0;
+}
+
+
+p {
+    width: 60%;
+    margin-top: 1rem;
+    padding-right: 0;
+    vertical-align: baseline;
+}
+
+blockquote {
+    font-size: 1.05rem;
+    opacity: 0.8;
+    border-left: 4px solid #e8e8e8;
+    margin: 30px 0;
+    padding-left: 20px;
+    font-style: italic;
+}
+
+blockquote p {
+    width: 55%;
+    margin-right: 60px;
+}
+
+blockquote p cite {
+    display: block;
+    text-align: right;
+}
+
+
+
+a         { color: #2a7ae2; text-decoration: underline; }
+a:hover   { color: #000; text-decoration: underline; }
+a:visited { color: #205caa; }
+
+.email {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+code {
+    color: hsl(200, 20%, 40%);
+    font: normal 15px 'Source Code Pro';
+}
+
+pre {
+    color: #333;
+    font: normal 14px/16px 'Source Code Pro';
+    padding: 8px;
+    width: 50%;
+
+    background: hsl(170, 20%, 99%);
+    border: solid 1px hsl(170, 40%, 96%);
+    border-radius: 4px;
+    overflow: auto;
+}
+
+aside, span.aside {
+    display: block;
+    color: #868279;
+    margin-top: 1rem;
+    padding: 10px 10px;
+    background: #faf8f5;
+    border: solid 1px #f7f4ed;
+    border-bottom: solid 1px #f0e9db;
+    border-radius: 3px;
+}
+
+@media all and (min-width: 800px) {
+aside, span.aside {
+    display: block;
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 1.3;
+    vertical-align: baseline;
+    position: relative;
+    border: none;
+    background: inherit;
+}
+}
+
+@media all and (max-width: 800px) {
+body {
+    padding-left: 10%;
+    padding-right: 10%;
+    width: 80%;
+}
+
+p, blockquote p {
+    width: 100%;
+}
+}

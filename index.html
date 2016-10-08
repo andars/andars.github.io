@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Hello World </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href='style.css' type='text/css' rel='stylesheet'>
+  <link href="http://fonts.googleapis.com/css?family=Merriweather:400,400italic|Source+Code+Pro|Source+Sans+Pro:300" rel="stylesheet" type="text/css">
+  
+  <script type="text/javascript">
+    window.onload = function() {
+      var mathElements = document.getElementsByClassName("math");
+      for (var i=0; i < mathElements.length; i++) {
+        var texText = mathElements[i].firstChild
+        katex.render(texText.data, mathElements[i])
+      }
+    }
+  </script>
+</head>
+<body>
+  <article>
+    <h1 id="title">Hello World</h1>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <span class="aside">consequat</span></p>
+<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>OK Here We Go!</p>
+<blockquote>
+<p>I think, therefore I am. lorem ipsum dolor sit amet, consecteturo <cite> Descartes </cite></p>
+</blockquote>
+<h2 id="testing">Testing</h2>
+<p>does <em>markdown</em> <strong>work</strong>?</p>
+<ol style="list-style-type: decimal">
+<li>ok</li>
+<li>maybe</li>
+<li>wut</li>
+</ol>
+<p><span class="aside"> wut don't do this ever. </span></p>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">sum</span>(xs) <span class="op">{</span>
+    <span class="cf">return</span> <span class="dv">27</span><span class="op">;</span>
+<span class="op">}</span></code></pre></div>
+
+  </article>
+</body>
+</html>
