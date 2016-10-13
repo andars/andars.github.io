@@ -1,0 +1,14 @@
+---
+layout: page
+...
+
+# the archives
+
+<div>
+{% for year in years %}
+    <h3> {{ year.year }} </h3>
+    {% for post in year.posts %}
+        <p><a href='{{post.location}}'> {{ post.title |e }} </a> </p>
+    {% endfor %}
+{% endfor %}
+</div>

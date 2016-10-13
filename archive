@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+require 'date'
+
+posts = Dir["content/*.page"].map do |filename|
+    frontmatter = `cat #{filename} | fm`
+
+    layout = frontmatter.match(/layout: ([a-z]*)/).captures[0]
+
+    if layout == 'post'
+      title = frontmatter.match(/title: (.*)/).captures[0]
+      location = "#{File.basename(filename, '.page')}.html"
+      date = DateTime.parse(frontmatter.match(/date: (.*)/).captures[0]) || ""
+
+      { title: title, location: location, date: date}
+    else
+      nil
+    end
+end.compact.sort_by { |post| post[:date] }.reverse
+
+year = posts[0][:date].year
+
+i = 0
+post_list = []
+posts_in_year = []
+
+while i < posts.length
+  post = posts[i]
+  if year != post[:date].year
+    post_list << posts_in_year
+    posts_in_year = []
+    year = post[:date].year
+  end
+  posts_in_year << post
+  i += 1
+end
+post_list << posts_in_year
+
+puts "years:"
+post_list.each do |year_list|
+  puts "  - year: #{year_list[0][:date].year}"
+  puts "    posts:"
+  year_list.each do |post|
+    puts "    - title: #{post[:title]}"
+    puts "      location: #{post[:location]}"
+    puts "      date: #{post[:date]}"
+  end
+end

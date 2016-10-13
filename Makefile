@@ -16,20 +16,15 @@ ALL_DEPS := $(FILES) # $(DEST)/archive.html
 export PATH := .:$(PATH)
 
 all: $(ALL_DEPS)
-	#@rm -f $(CONTENT)/archive.page
+	@rm -f $(CONTENT)/*.meta $(CONTENT)/*.mk
 .PHONY: all
 
-#$(CONTENT)/archive.page: $(FILES) archive
-#	@archive > $@
-#
 $(DEST)/archive.html: $(CONTENT)/archive.meta $(CONTENT)/archive.mk $(LAYOUTS)
 	@mkdir -p $(@D)
-	cat $< > build/archive_meta
-	archive >> build/archive_meta
-	jinja2 $(word 2, $^) build/archive_meta --format yaml > build/tmp # render body
-	cat build/tmp
-	render_page $< build/tmp > $@ # insert body in layout page
-	rm build/tmp
+	@cat $< > build/archive_meta
+	@archive >> build/archive_meta
+	@jinja2 $(word 2, $^) build/archive_meta --format yaml > build/tmp # render body
+	@render_page $< build/tmp > $@ # insert body in layout page
 
 $(DEST)/%.$(EXT_OUT): $(CONTENT)/%.meta $(CONTENT)/%.mk $(LAYOUTS)
 	@mkdir -p $(@D)
@@ -40,7 +35,8 @@ $(DEST)/%.$(EXT_OUT): $(CONTENT)/%.meta $(CONTENT)/%.mk $(LAYOUTS)
 $(CONTENT)/%.mk: $(CONTENT)/%.$(EXT_IN)
 	@cat $< | \
 		fm -s | \
-		pandoc --katex --highlight-style pygments -t html > $@
+		pandoc -f markdown-markdown_in_html_blocks+raw_html \
+		       --katex --highlight-style pygments -t html > $@
 
 $(CONTENT)/%.meta: $(CONTENT)/%.$(EXT_IN)
 	@cat $< | fm > $@
