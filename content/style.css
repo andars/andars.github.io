@@ -8,7 +8,8 @@ body {
     width: 85%;
     margin-left: auto;
     margin-right: auto;
-    font: normal 14px/24px "Merriweather", Georgia, serif;
+    font: normal 16px/24px "Book Antiqua", Palatino, "Palatino Linotype", Georgia, serif;
+    /*font: normal 14px/24px "Merriweather", Georgia, serif;*/
     font-weight: 100;
     color: #222;
     max-width: 1500px;
@@ -19,7 +20,8 @@ h1 {
     margin-bottom: 1rem;
     line-height: 1;
     font-weight: 300;
-    font: 200 3rem "Source Sans Pro", Georgia, serif;
+    font-size: 3rem;
+    /*font: 200 3rem "Source Sans Pro", Georgia, serif;*/
 }
 
 h2 {
@@ -28,7 +30,8 @@ h2 {
     font-size: 1.8rem;
     line-height: 1;
     font-weight: 400;
-    font: 200 2rem "Source Sans Pro", Georgia, serif;
+    font-size: 2rem;
+    /*font: 200 2rem "Source Sans Pro", Georgia, serif;*/
 }
 
 article {
@@ -46,7 +49,6 @@ p {
 
 blockquote {
     font-size: 1.05rem;
-    opacity: 0.8;
     border-left: 4px solid #e8e8e8;
     margin: 30px 0;
     padding-left: 20px;
@@ -131,6 +133,9 @@ aside, span.aside {
     position: relative;
     border: none;
     background: inherit;
+}
+article {
+    padding-left: 10%;
 }
 }
 

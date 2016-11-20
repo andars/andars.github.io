@@ -25,6 +25,7 @@ $(DEST)/archive.html: $(CONTENT)/archive.meta $(CONTENT)/archive.mk $(LAYOUTS)
 	@archive >> build/archive_meta
 	@jinja2 $(word 2, $^) build/archive_meta --format yaml > build/tmp # render body
 	@render_page $< build/tmp > $@ # insert body in layout page
+	@rm -f build/tmp build/archive_meta
 
 $(DEST)/%.$(EXT_OUT): $(CONTENT)/%.meta $(CONTENT)/%.mk $(LAYOUTS)
 	@mkdir -p $(@D)
