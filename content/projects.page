@@ -22,6 +22,16 @@ layout: page
     </tr>
     <tr>
         <td>
+        <img src='/projects/llcompiler/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://github.com/andars/ll_compiler'> LLCompiler </a>
+            <br/>
+            A programming language compiler that emits x86_64 assembly
+        </td>
+    </tr>
+    <tr>
+        <td>
         <img src='/projects/xenon/thumbnail.png'/>
         </td>
         <td>
@@ -29,6 +39,46 @@ layout: page
             <br/>
             Path Tracing Global Illumination renderer
         </td>
+    </tr>
+    <tr>
+        <td>
+        <img src='/projects/second_derivative/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://github.com/andars/second_partial_derivative'> Second Partial Derivative Test Visuals</a>
+            <br/>
+            A visualization of the second partial derivative test showing the
+            local Hessian approximation to the function
+        </td>
+    </tr>
+    <tr>
+        <td>
+        <img src='/projects/truth_table/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://github.com/andars/truth-table'> Truth Table Generator</a>
+            <br/>
+            Parses a provided boolean expression and generates the
+            corresponding truth table
+        </td>
+    </tr>
     </tbody>
 </table>
 
+## 2015
+
+<table class='projects'>
+    <tbody>
+    <tr>
+        <td>
+        <img src='/projects/pebble.rs/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://github.com/andars/pebble.rs'> pebble.rs</a>
+            <br/>
+            Writing watchapps for the Pebble smartwatch in the Rust programming
+            language.
+        </td>
+    </tr>
+    </tbody>
+</table>
