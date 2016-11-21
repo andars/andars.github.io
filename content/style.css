@@ -123,8 +123,13 @@ article li {
     list-style-type: none;
 }
 
+ul.rlist li {
+    padding-bottom: 5px;
+}
+
 table.projects {
     width: auto;
+    padding-left: 5%;
 }
 
 table.projects td {
@@ -153,12 +158,28 @@ article {
 
 @media all and (max-width: 800px) {
 body {
-    padding-left: 10%;
-    padding-right: 10%;
-    width: 80%;
+    padding-left: 5%;
+    padding-right: 5%;
+    width: 90%;
 }
 
 p, blockquote p {
     width: 100%;
+}
+
+table.projects img {
+    width: 64px;
+}
+
+table.projects td {
+    padding-bottom: 10%;
+}
+
+ul.rlist {
+    padding-left: 5%;
+}
+
+ul.rlist li {
+    padding-bottom: 5%;
 }
 }
