@@ -1,0 +1,271 @@
+---
+title: functional programming & fold
+layout: post
+math: false
+date: 2015-09-19T20:15:35-06:00
+...
+
+# {{ title }}
+
+Recently, I have been experimenting with functional programming and trying to
+learn the basics of SML and OCaml. As I have been doing so, I have begun to
+develop my own perspectives about the relationship and differences between
+functional and imperative programming.
+
+To illustrate, I'll run through a basic programming task and compare the
+equivalent implementations in Java <span class='aside'>"But Java is
+object-oriented!11!"  <br/> Yes. These two paradigms are not mutually
+exclusive, and there is no question that Java is imperative. </span> and
+OCaml.
+
+
+Here is the task:
+
+>Write a function that calculates and returns the sum of the entries in an
+>array/list of integers.
+
+Pretty straightforward.
+
+## imperative solution
+
+In Java, this problem calls for a simple for loop adding each element of the
+array to an accumulator, as seen below.
+
+```java
+int arraySum(int[] arr, int length) {
+    int sum = 0;
+    for (int i = 0; i<arr.length; i++) {
+        sum += arr[i];
+    }
+
+    return sum;
+}
+```
+
+<aside>
+    <p>
+    Yes, yes, I know. Enhanced for loop, blah, blah, blah. I'm not counting
+    characters here (it does get tempting later though), and the idea is the
+    same.
+    </p>
+</aside>
+
+## functional solution v1
+
+In contrast, functional languages tend towards a declarative style of
+programming. Rather than explicitly telling the computer *how* to accomplish
+the computation, functional programming (and more generally, declarative
+programming) encourages telling the machine *what* to accomplish.
+
+Let's take a look at an initial Ocaml solution of the same task.
+
+```ocaml
+let rec sum list = match list with
+    | [] -> 0
+    | x::xs -> x + sum xs
+```
+
+That looks pretty slick, eh? Sum of nothing is 0, sum of a list of one or more
+elements is the first element plus the sum of the rest. That statement is
+translated directly from the code above.
+
+Recursion is dope.
+
+## tail recursion (aka functional solution v2)
+
+However, we do have a slight problem. You are likely familiar with the concept
+of the call stack. Every time a function is called, a new stack frame is pushed
+onto the hardware stack. Call too many functions, get a stack overflow. No fun.
+(There is also a performance overhead of creating the new stack frame, but
+nothing drastic).
+
+So where does that leave us? Do we wave goodbye to the elegance of functional
+programming, accept that current computer architectures don't align well with
+it, and move back to imperative code?
+
+Erm, no. That would be no fun, and we are all about fun around here.
+
+We can do better. Take a look at this.
+
+```ocaml
+let sum list =
+    let sum_helper acc xs = match xs with
+        | [] -> acc
+        | x::xs -> sum_helper acc+x xs
+    in
+        sum_helper 0 list
+    end
+```
+
+Not quite so straightforward anymore, but still okay. `sum_helper` here looks
+pretty similar to `sum` from the previous implementation, but there is one
+significant difference. We have added an accumulator variable to the function,
+so as it moves down the list the `acc` argument contains the prefix sum up to
+that point. As a result, `sum_helper` does not do anything after recursing
+except return the value it receives. Scroll back up and note that in v1, `sum`
+called itself, added the value of x to that sum, and then returned it. That operation
+has now been merged, in a sense, with the call itself.
+
+Seems like extra complexity, and its not clear that we have gained anything.
+But, in fact, we have. OCaml (and most largely functional languages) optimize
+tail calls, like the one in `sum_helper`. Rather than creating a new stack
+frame and adding it to the stack, the generated code will essentially replace
+the previous stack frame with the new one, because the result will be identical
+since all the previous function has left to do is return a value. Executing
+this new function generates a linear iterative process, rather than a linear
+recursive one. If you take a look at the generated assembly, the result is
+essentially just a loop.
+
+Pretty good, huh? We had to add a little more complexity, but in return we get
+an executable that is competitive with the imperative approach.
+
+However, it's not perfect. You may be wondering, as I did, whether or not
+proceeding with functional programming will require ever increasing complexity
+to keep pace with the efficiency of imperative code. I don't have enough
+experience to give a good answer to this, so I'll just leave it hanging for now.
+Sorry.
+
+This could be the end, and it would be cooolio, but we can take one more step.
+
+## first class functions & fold
+
+As you work with functional languages and gain just a little more experience,
+it quickly becomes apparent that the pattern above of recursing on the tail of
+a list with a modified accumulator is extremely common.
+
+To illustrate, here are some other functions using the pattern.
+
+(I'm not going to bother wrapping these functions)
+
+```ocaml
+let rec length acc list = match list with
+    | [] -> acc
+    | x::rest -> len (acc+1) rest
+
+let len = length 0 [1;2;3]
+(* len : int = 3 *)
+
+let rec reverse acc list = match list with
+    | [] -> acc
+    | x::rest -> reverse (x::acc) rest
+
+let reversed = reverse [] [1;2;3]
+(* reversed : int list = [3;2;1] *)
+```
+
+There it is twice more. You're going to have to trust me that
+it appears everywhere.
+
+If you enjoy typing, you can stop reading here (you'll miss out
+on the coolest part though).
+
+It seems rather wasteful and redundant to have to rewrite essentially
+the same code over and over with only one term varying. Luckily, part of the
+power of functional languages lies in the ability to write functions
+that operate on functions, because functions are first-class entities.
+
+Let's give that a try, then. I want a function that takes a function, an
+accumulator of some sort, and a list, and recurses on itself, applying the provided
+function to the head of the list and the current accumulator to transform it.
+
+```ocaml
+let rec my_cool_function f acc list = match list with
+    | [] -> acc
+    | x::xs -> my_cool_function f (f acc x) xs
+```
+
+Now let's look at how we can implement the three functions above
+using `my_cool_function`.
+
+All three of the following functions take advantage of the ability to partially
+apply functions. `my_cool_function` has type `('a -> 'b -> 'a) -> 'a -> 'b list
+-> 'a`, so applying two arguments to it results in a function of type `'b list
+-> 'a`. If you're not sure what the above means, the `'a`s and `'b`s represent
+type variables, similar to `T` in a C++ template or Java generic, and the
+arrows indicate a function.
+
+```ocaml
+let sum = my_cool_function (+) 0
+let s = sum [1;2;3;4]
+(* s : int = 10 *)
+```
+
+<aside>
+    <p>
+    Wrapping a binary operator with parens in OCaml turns it back into
+    a regular function of two arguments.
+    </p>
+</aside>
+
+```ocaml
+let length = my_cool_function (fun acc x -> acc+1) 0
+
+let len = length [1;2;3]
+(* len : int = 3 *)
+```
+
+<aside>
+    <p>
+    The `fun` expression used in `length` is called a *lambda expression*
+    </p>
+</aside>
+
+```ocaml
+let reverse = my_cool_function (fun acc x -> x::acc) []
+
+let reversed = reverse [1;2;3]
+(* reversed : int list = [3;2;1] *)
+```
+
+I've taken the liberty of calling it `my_cool_function` above, but
+unfortunately, this function is not truly mine. Someone else came up with it
+decades ago, and it is in the standard library of most languages that have some
+form of functional programming capabilities. It is widely known as
+a left-associative `fold`, but is also referred to as `reduce` or `inject`. In
+OCaml, it appears as `List.fold_left`, so we can rewrite the above sum
+implementation as:
+
+```ocaml
+let sum = List.fold_left (+) 0
+```
+
+If you aren't already familiar with the functional paradigm, that may seem like
+a bit much. The entire definition of a function to sum a list has 3 symbols.
+With no list variable.
+
+Wat.
+
+I can't even describe how to sum a list in *english* <span class='aside'>English may or may not be relevant, because it is terribly
+imprecise and not succint at all. whatever.</span> in three words. The v1
+OCaml implementation probably was understandable if you are familiar with
+recursion, but this seems to be on a whole new level.
+
+This is the result of the declarative style of programming. Rather than giving
+the processor (or the VM) explicit instructions on how exactly to complete the
+task, we are able to describe the goal in terms of functions, using them as
+building blocks.
+
+That line above is the distilled essence of what it means to sum a list,
+expressed in terms of the `fold` operation we have developed above. You have to
+admit, this is powerful stuff.
+
+## time to duel?
+
+So, are we doomed to endure the flame wars between proponents of imperative
+programming and those of functional programming? Based on historical trends, it
+would seem so, but I certainly hope not. As goes for everything in the world of
+computering, there is no absolute 'best'.
+
+I like to draw parallels between functional programming and Church's lambda
+calculus and imperative programming and Turing machines. It is not perfect, as
+is evident if you reading Turing's 1936 paper, but the idea captures the spirit
+of the differences. Functional programming descended from math, and imperative
+programming arose from machines.
+
+
+*If you have any comments, corrections, or suggestions, feel free to email me at
+<span class='email'>ten.uyb@etoofwerdna</span>*
+
+### semi-relevant tweet that made me laugh
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">what idiot called it functional programming with immutable data structures and not separation of Church and state</p>&mdash; lacroixalty (@meat) <a href="https://twitter.com/meat/status/521765413043314689">October 13, 2014</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
