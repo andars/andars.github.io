@@ -42,13 +42,11 @@ int arraySum(int[] arr, int length) {
 }
 ```
 
-<aside>
-    <p>
+<span class='aside'>
     Yes, yes, I know. Enhanced for loop, blah, blah, blah. I'm not counting
     characters here (it does get tempting later though), and the idea is the
     same.
-    </p>
-</aside>
+</span>
 
 ## functional solution v1
 
@@ -184,18 +182,20 @@ apply functions. `my_cool_function` has type `('a -> 'b -> 'a) -> 'a -> 'b list
 type variables, similar to `T` in a C++ template or Java generic, and the
 arrows indicate a function.
 
+<span class='aside'>
+    Wrapping a binary operator with parens in OCaml turns it back into
+    a regular function of two arguments.
+</span>
+
 ```ocaml
 let sum = my_cool_function (+) 0
 let s = sum [1;2;3;4]
 (* s : int = 10 *)
 ```
 
-<aside>
-    <p>
-    Wrapping a binary operator with parens in OCaml turns it back into
-    a regular function of two arguments.
-    </p>
-</aside>
+<span class='aside'>
+    The `fun` expression used in `length` is called a *lambda expression*
+</span>
 
 ```ocaml
 let length = my_cool_function (fun acc x -> acc+1) 0
@@ -204,11 +204,6 @@ let len = length [1;2;3]
 (* len : int = 3 *)
 ```
 
-<aside>
-    <p>
-    The `fun` expression used in `length` is called a *lambda expression*
-    </p>
-</aside>
 
 ```ocaml
 let reverse = my_cool_function (fun acc x -> x::acc) []
