@@ -1,0 +1,34 @@
+---
+title: Projects
+layout: page
+...
+
+# Projects
+<br/>
+
+## 2016
+
+<table class='projects'>
+    <tbody>
+    <tr>
+        <td>
+        <img src='/projects/dynamical-systems/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://andars.github.io/dynamic-system'> Visualizing Dynamical Systems</a>
+            <br/>
+            Simulation of systems described by differential equations
+        </td>
+    </tr>
+    <tr>
+        <td>
+        <img src='/projects/xenon/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://github.com/andars/xenon'> Xenon Renderer</a>
+            <br/>
+            Path Tracing Global Illumination renderer
+        </td>
+    </tbody>
+</table>
+

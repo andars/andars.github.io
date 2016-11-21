@@ -123,6 +123,14 @@ article li {
     list-style-type: none;
 }
 
+table.projects {
+    width: auto;
+}
+
+table.projects td {
+    padding-right: 10px;
+}
+
 @media all and (min-width: 800px) {
 aside, span.aside {
     display: block;
