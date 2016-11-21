@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Art of Doing Science & Engineering </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href='/style.css' type='text/css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic|Source+Code+Pro|Source+Sans+Pro:300" rel="stylesheet" type="text/css">
+  
+  <script type="text/javascript">
+    window.onload = function() {
+      var mathElements = document.getElementsByClassName("math");
+      for (var i=0; i < mathElements.length; i++) {
+        var texText = mathElements[i].firstChild
+        katex.render(texText.data, mathElements[i])
+      }
+    }
+  </script>
+</head>
+<body>
+  <nav>
+  <ul class='navbar'>
+    <li><a href='/projects.html'>projects</a></li>
+    <li><a href='/about.html'>about</a></li>
+    <li><a href='/archive.html'>archive</a></li>
+    <li><a href='/reading.html'>reading list</a></li>
+  </ul>
+</nav>
+
+  <article>
+  <h2 id="quotes-from-the-art-of-doing-science-and-engineering">Quotes from <em>The Art of Doing Science and Engineering</em></h2>
+
+  </article>
+</body>
+</html>

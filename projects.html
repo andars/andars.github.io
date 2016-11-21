@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Projects </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href='/style.css' type='text/css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic|Source+Code+Pro|Source+Sans+Pro:300" rel="stylesheet" type="text/css">
+  
+  <script type="text/javascript">
+    window.onload = function() {
+      var mathElements = document.getElementsByClassName("math");
+      for (var i=0; i < mathElements.length; i++) {
+        var texText = mathElements[i].firstChild
+        katex.render(texText.data, mathElements[i])
+      }
+    }
+  </script>
+</head>
+<body>
+  <nav>
+  <ul class='navbar'>
+    <li><a href='/projects.html'>projects</a></li>
+    <li><a href='/about.html'>about</a></li>
+    <li><a href='/archive.html'>archive</a></li>
+    <li><a href='/reading.html'>reading list</a></li>
+  </ul>
+</nav>
+
+  <article>
+  <h1 id="projects">Projects</h1>
+<p><br/></p>
+<h2 id="section">2016</h2>
+<table class='projects'>
+    <tbody>
+    <tr>
+        <td>
+        <img src='/projects/dynamical-systems/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://andars.github.io/dynamic-system'> Visualizing Dynamical Systems</a>
+            <br/>
+            Simulation of systems described by differential equations
+        </td>
+    </tr>
+    <tr>
+        <td>
+        <img src='/projects/xenon/thumbnail.png'/>
+        </td>
+        <td>
+            <a href='https://github.com/andars/xenon'> Xenon Renderer</a>
+            <br/>
+            Path Tracing Global Illumination renderer
+        </td>
+    </tbody>
+</table>
+
+  </article>
+</body>
+</html>

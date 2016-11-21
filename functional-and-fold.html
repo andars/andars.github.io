@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> functional programming & fold </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href='/style.css' type='text/css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300" rel="stylesheet" type="text/css">
+  
+  <script type="text/javascript">
+    window.onload = function() {
+      var mathElements = document.getElementsByClassName("math");
+      for (var i=0; i < mathElements.length; i++) {
+        var texText = mathElements[i].firstChild
+        katex.render(texText.data, mathElements[i])
+      }
+    }
+  </script>
+</head>
+<body>
+  <nav>
+  <ul class='navbar'>
+    <li><a href='/projects.html'>projects</a></li>
+    <li><a href='/about.html'>about</a></li>
+    <li><a href='/archive.html'>archive</a></li>
+    <li><a href='/reading.html'>reading list</a></li>
+  </ul>
+</nav>
+
+  <article>
+    <h1 id="title">functional programming & fold</h1>
+<p>Recently, I have been experimenting with functional programming and trying to learn the basics of SML and OCaml. As I have been doing so, I have begun to develop my own perspectives about the relationship and differences between functional and imperative programming.</p>
+<p>To illustrate, I'll run through a basic programming task and compare the equivalent implementations in Java <span class="aside">&quot;But Java is object-oriented!11!&quot; <br/> Yes. These two paradigms are not mutually exclusive, and there is no question that Java is imperative. </span> and OCaml.</p>
+<p>Here is the task:</p>
+<blockquote>
+<p>Write a function that calculates and returns the sum of the entries in an array/list of integers.</p>
+</blockquote>
+<p>Pretty straightforward.</p>
+<h2 id="imperative-solution">imperative solution</h2>
+<p>In Java, this problem calls for a simple for loop adding each element of the array to an accumulator, as seen below.</p>
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="dt">int</span> <span class="fu">arraySum</span>(<span class="dt">int</span>[] arr, <span class="dt">int</span> length) {
+    <span class="dt">int</span> sum = <span class="dv">0</span>;
+    <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i&lt;arr.<span class="fu">length</span>; i++) {
+        sum += arr[i];
+    }
+
+    <span class="kw">return</span> sum;
+}</code></pre></div>
+<aside>
+    <p>
+    Yes, yes, I know. Enhanced for loop, blah, blah, blah. I'm not counting
+    characters here (it does get tempting later though), and the idea is the
+    same.
+    </p>
+</aside>
+<h2 id="functional-solution-v1">functional solution v1</h2>
+<p>In contrast, functional languages tend towards a declarative style of programming. Rather than explicitly telling the computer <em>how</em> to accomplish the computation, functional programming (and more generally, declarative programming) encourages telling the machine <em>what</em> to accomplish.</p>
+<p>Let's take a look at an initial Ocaml solution of the same task.</p>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> <span class="kw">rec</span> sum <span class="dt">list</span> = <span class="kw">match</span> <span class="dt">list</span> <span class="kw">with</span>
+    | [] -&gt; <span class="dv">0</span>
+    | x::xs -&gt; x + sum xs</code></pre></div>
+<p>That looks pretty slick, eh? Sum of nothing is 0, sum of a list of one or more elements is the first element plus the sum of the rest. That statement is translated directly from the code above.</p>
+<p>Recursion is dope.</p>
+<h2 id="tail-recursion-aka-functional-solution-v2">tail recursion (aka functional solution v2)</h2>
+<p>However, we do have a slight problem. You are likely familiar with the concept of the call stack. Every time a function is called, a new stack frame is pushed onto the hardware stack. Call too many functions, get a stack overflow. No fun. (There is also a performance overhead of creating the new stack frame, but nothing drastic).</p>
+<p>So where does that leave us? Do we wave goodbye to the elegance of functional programming, accept that current computer architectures don't align well with it, and move back to imperative code?</p>
+<p>Erm, no. That would be no fun, and we are all about fun around here.</p>
+<p>We can do better. Take a look at this.</p>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> sum <span class="dt">list</span> =
+    <span class="kw">let</span> sum_helper acc xs = <span class="kw">match</span> xs <span class="kw">with</span>
+        | [] -&gt; acc
+        | x::xs -&gt; sum_helper acc+x xs
+    <span class="kw">in</span>
+        sum_helper <span class="dv">0</span> <span class="dt">list</span>
+    end</code></pre></div>
+<p>Not quite so straightforward anymore, but still okay. <code>sum_helper</code> here looks pretty similar to <code>sum</code> from the previous implementation, but there is one significant difference. We have added an accumulator variable to the function, so as it moves down the list the <code>acc</code> argument contains the prefix sum up to that point. As a result, <code>sum_helper</code> does not do anything after recursing except return the value it receives. Scroll back up and note that in v1, <code>sum</code> called itself, added the value of x to that sum, and then returned it. That operation has now been merged, in a sense, with the call itself.</p>
+<p>Seems like extra complexity, and its not clear that we have gained anything. But, in fact, we have. OCaml (and most largely functional languages) optimize tail calls, like the one in <code>sum_helper</code>. Rather than creating a new stack frame and adding it to the stack, the generated code will essentially replace the previous stack frame with the new one, because the result will be identical since all the previous function has left to do is return a value. Executing this new function generates a linear iterative process, rather than a linear recursive one. If you take a look at the generated assembly, the result is essentially just a loop.</p>
+<p>Pretty good, huh? We had to add a little more complexity, but in return we get an executable that is competitive with the imperative approach.</p>
+<p>However, it's not perfect. You may be wondering, as I did, whether or not proceeding with functional programming will require ever increasing complexity to keep pace with the efficiency of imperative code. I don't have enough experience to give a good answer to this, so I'll just leave it hanging for now. Sorry.</p>
+<p>This could be the end, and it would be cooolio, but we can take one more step.</p>
+<h2 id="first-class-functions-fold">first class functions &amp; fold</h2>
+<p>As you work with functional languages and gain just a little more experience, it quickly becomes apparent that the pattern above of recursing on the tail of a list with a modified accumulator is extremely common.</p>
+<p>To illustrate, here are some other functions using the pattern.</p>
+<p>(I'm not going to bother wrapping these functions)</p>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> <span class="kw">rec</span> length acc <span class="dt">list</span> = <span class="kw">match</span> <span class="dt">list</span> <span class="kw">with</span>
+    | [] -&gt; acc
+    | x::rest -&gt; len (acc+<span class="dv">1</span>) rest
+
+<span class="kw">let</span> len = length <span class="dv">0</span> [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>]
+<span class="co">(* len : int = 3 *)</span>
+
+<span class="kw">let</span> <span class="kw">rec</span> reverse acc <span class="dt">list</span> = <span class="kw">match</span> <span class="dt">list</span> <span class="kw">with</span>
+    | [] -&gt; acc
+    | x::rest -&gt; reverse (x::acc) rest
+
+<span class="kw">let</span> reversed = reverse [] [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>]
+<span class="co">(* reversed : int list = [3;2;1] *)</span></code></pre></div>
+<p>There it is twice more. You're going to have to trust me that it appears everywhere.</p>
+<p>If you enjoy typing, you can stop reading here (you'll miss out on the coolest part though).</p>
+<p>It seems rather wasteful and redundant to have to rewrite essentially the same code over and over with only one term varying. Luckily, part of the power of functional languages lies in the ability to write functions that operate on functions, because functions are first-class entities.</p>
+<p>Let's give that a try, then. I want a function that takes a function, an accumulator of some sort, and a list, and recurses on itself, applying the provided function to the head of the list and the current accumulator to transform it.</p>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> <span class="kw">rec</span> my_cool_function f acc <span class="dt">list</span> = <span class="kw">match</span> <span class="dt">list</span> <span class="kw">with</span>
+    | [] -&gt; acc
+    | x::xs -&gt; my_cool_function f (f acc x) xs</code></pre></div>
+<p>Now let's look at how we can implement the three functions above using <code>my_cool_function</code>.</p>
+<p>All three of the following functions take advantage of the ability to partially apply functions. <code>my_cool_function</code> has type <code>('a -&gt; 'b -&gt; 'a) -&gt; 'a -&gt; 'b list -&gt; 'a</code>, so applying two arguments to it results in a function of type <code>'b list -&gt; 'a</code>. If you're not sure what the above means, the <code>'a</code>s and <code>'b</code>s represent type variables, similar to <code>T</code> in a C++ template or Java generic, and the arrows indicate a function.</p>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> sum = my_cool_function (+) <span class="dv">0</span>
+<span class="kw">let</span> s = sum [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>;<span class="dv">4</span>]
+<span class="co">(* s : int = 10 *)</span></code></pre></div>
+<aside>
+    <p>
+    Wrapping a binary operator with parens in OCaml turns it back into
+    a regular function of two arguments.
+    </p>
+</aside>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> length = my_cool_function (<span class="kw">fun</span> acc x -&gt; acc+<span class="dv">1</span>) <span class="dv">0</span>
+
+<span class="kw">let</span> len = length [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>]
+<span class="co">(* len : int = 3 *)</span></code></pre></div>
+<aside>
+    <p>
+    The `fun` expression used in `length` is called a *lambda expression*
+    </p>
+</aside>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> reverse = my_cool_function (<span class="kw">fun</span> acc x -&gt; x::acc) []
+
+<span class="kw">let</span> reversed = reverse [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>]
+<span class="co">(* reversed : int list = [3;2;1] *)</span></code></pre></div>
+<p>I've taken the liberty of calling it <code>my_cool_function</code> above, but unfortunately, this function is not truly mine. Someone else came up with it decades ago, and it is in the standard library of most languages that have some form of functional programming capabilities. It is widely known as a left-associative <code>fold</code>, but is also referred to as <code>reduce</code> or <code>inject</code>. In OCaml, it appears as <code>List.fold_left</code>, so we can rewrite the above sum implementation as:</p>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> sum = List<span class="kw">.</span>fold_left (+) <span class="dv">0</span></code></pre></div>
+<p>If you aren't already familiar with the functional paradigm, that may seem like a bit much. The entire definition of a function to sum a list has 3 symbols. With no list variable.</p>
+<p>Wat.</p>
+<p>I can't even describe how to sum a list in <em>english</em> <span class="aside">English may or may not be relevant, because it is terribly imprecise and not succint at all. whatever.</span> in three words. The v1 OCaml implementation probably was understandable if you are familiar with recursion, but this seems to be on a whole new level.</p>
+<p>This is the result of the declarative style of programming. Rather than giving the processor (or the VM) explicit instructions on how exactly to complete the task, we are able to describe the goal in terms of functions, using them as building blocks.</p>
+<p>That line above is the distilled essence of what it means to sum a list, expressed in terms of the <code>fold</code> operation we have developed above. You have to admit, this is powerful stuff.</p>
+<h2 id="time-to-duel">time to duel?</h2>
+<p>So, are we doomed to endure the flame wars between proponents of imperative programming and those of functional programming? Based on historical trends, it would seem so, but I certainly hope not. As goes for everything in the world of computering, there is no absolute 'best'.</p>
+<p>I like to draw parallels between functional programming and Church's lambda calculus and imperative programming and Turing machines. It is not perfect, as is evident if you reading Turing's 1936 paper, but the idea captures the spirit of the differences. Functional programming descended from math, and imperative programming arose from machines.</p>
+<p><em>If you have any comments, corrections, or suggestions, feel free to email me at <span class="email">ten.uyb@etoofwerdna</span></em></p>
+<h3 id="semi-relevant-tweet-that-made-me-laugh">semi-relevant tweet that made me laugh</h3>
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">what idiot called it functional programming with immutable data structures and not separation of Church and state</p>&mdash; lacroixalty (@meat) <a href="https://twitter.com/meat/status/521765413043314689">October 13, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+  </article>
+</body>
+</html>
