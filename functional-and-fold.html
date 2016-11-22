@@ -46,13 +46,7 @@
 
     <span class="kw">return</span> sum;
 }</code></pre></div>
-<aside>
-    <p>
-    Yes, yes, I know. Enhanced for loop, blah, blah, blah. I'm not counting
-    characters here (it does get tempting later though), and the idea is the
-    same.
-    </p>
-</aside>
+<p><span class="aside"> Yes, yes, I know. Enhanced for loop, blah, blah, blah. I'm not counting characters here (it does get tempting later though), and the idea is the same. </span></p>
 <h2 id="functional-solution-v1">functional solution v1</h2>
 <p>In contrast, functional languages tend towards a declarative style of programming. Rather than explicitly telling the computer <em>how</em> to accomplish the computation, functional programming (and more generally, declarative programming) encourages telling the machine <em>what</em> to accomplish.</p>
 <p>Let's take a look at an initial Ocaml solution of the same task.</p>
@@ -104,24 +98,15 @@
     | x::xs -&gt; my_cool_function f (f acc x) xs</code></pre></div>
 <p>Now let's look at how we can implement the three functions above using <code>my_cool_function</code>.</p>
 <p>All three of the following functions take advantage of the ability to partially apply functions. <code>my_cool_function</code> has type <code>('a -&gt; 'b -&gt; 'a) -&gt; 'a -&gt; 'b list -&gt; 'a</code>, so applying two arguments to it results in a function of type <code>'b list -&gt; 'a</code>. If you're not sure what the above means, the <code>'a</code>s and <code>'b</code>s represent type variables, similar to <code>T</code> in a C++ template or Java generic, and the arrows indicate a function.</p>
+<p><span class="aside"> Wrapping a binary operator with parens in OCaml turns it back into a regular function of two arguments. </span></p>
 <div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> sum = my_cool_function (+) <span class="dv">0</span>
 <span class="kw">let</span> s = sum [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>;<span class="dv">4</span>]
 <span class="co">(* s : int = 10 *)</span></code></pre></div>
-<aside>
-    <p>
-    Wrapping a binary operator with parens in OCaml turns it back into
-    a regular function of two arguments.
-    </p>
-</aside>
+<p><span class="aside"> The <code>fun</code> expression used in <code>length</code> is called a <em>lambda expression</em> </span></p>
 <div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> length = my_cool_function (<span class="kw">fun</span> acc x -&gt; acc+<span class="dv">1</span>) <span class="dv">0</span>
 
 <span class="kw">let</span> len = length [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>]
 <span class="co">(* len : int = 3 *)</span></code></pre></div>
-<aside>
-    <p>
-    The `fun` expression used in `length` is called a *lambda expression*
-    </p>
-</aside>
 <div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> reverse = my_cool_function (<span class="kw">fun</span> acc x -&gt; x::acc) []
 
 <span class="kw">let</span> reversed = reverse [<span class="dv">1</span>;<span class="dv">2</span>;<span class="dv">3</span>]
