@@ -112,19 +112,21 @@ nav {
     text-align: center;
 }
 
+nav ul {
+    padding-left: 0%;
+}
+
 nav li {
     list-style-type: none;
     display: inline;
     padding: 0 5%;
     text-decoration: underline;
-}
-
-article li {
-    list-style-type: none;
+    white-space: nowrap;
 }
 
 ul.rlist li {
     padding-bottom: 5px;
+    list-style-type: none;
 }
 
 table.projects {
