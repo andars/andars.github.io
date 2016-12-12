@@ -5,17 +5,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href='/style.css' type='text/css' rel='stylesheet'>
-  <link href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic|Source+Code+Pro|Source+Sans+Pro:300" rel="stylesheet" type="text/css">
-  
-  <script type="text/javascript">
-    window.onload = function() {
-      var mathElements = document.getElementsByClassName("math");
-      for (var i=0; i < mathElements.length; i++) {
-        var texText = mathElements[i].firstChild
-        katex.render(texText.data, mathElements[i])
-      }
-    }
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <script>
+  if (window.location.hostname !== "localhost") {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-88850827-1', 'auto');
+  ga('send', 'pageview'); }
   </script>
+  
 </head>
 <body>
   <nav>
@@ -28,7 +28,7 @@
 </nav>
 
   <article>
-  <h1 id="reading-list">reading list</h1>
+    <h1 id="reading-list">reading list</h1>
 <h2 id="section">2016</h2>
 <ul class='rlist'>
     <li> The Art of Doing Science & Engineering - <em> R. Hamming </em> <a href='notes/aofse.html'> [notes] </a></li>
@@ -54,6 +54,7 @@
     <li> What If? - <em> R. Munroe </em></li>
     <li> Fahrenheit 451 - <em> R. Bradbury </em></li>
     <li> Guns, Germs, and Steel: The Fate of Human Societies - <em> J. Diamond </em></li>
+    <li> Zero to One: Notes on Startups, or How to Build the Future - <em> Peter Thiel </em></li>
     <li> Einstein: His Life and Universe - <em> W. Isaacson </em>
     <li> All the Light We Cannot See - <em> A. Doerr </em></li>
     <li> The Boys in the Boat - <em> D. Brown </em></li>
