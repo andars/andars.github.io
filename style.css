@@ -13,6 +13,7 @@ body {
     font-weight: 100;
     color: #222;
     max-width: 1500px;
+    counter-reset: aside-counter;
 }
 
 h1 {
@@ -27,10 +28,9 @@ h1 {
 h2 {
     margin-top: 1rem;
     margin-bottom: 0.2rem;
-    font-size: 1.8rem;
     line-height: 1;
     font-weight: 400;
-    font-size: 2rem;
+    font-size: 1.8rem;
     /*font: 200 2rem "Source Sans Pro", Georgia, serif;*/
 }
 
@@ -97,6 +97,18 @@ pre {
     overflow: auto;
 }
 
+.aside-number {
+    counter-increment: aside-counter;
+}
+
+label.aside-number:after {
+    content: counter(aside-counter);
+    vertical-align: baseline;
+    position: relative;
+    font-size: 0.8rem;
+    top: -0.5rem;
+}
+
 aside, span.aside {
     display: block;
     color: #868279;
@@ -106,6 +118,16 @@ aside, span.aside {
     border: solid 1px #f7f4ed;
     border-bottom: solid 1px #f0e9db;
     border-radius: 3px;
+}
+
+span.aside:before {
+    content: counter(aside-counter) " ";
+    top: -0.5rem;
+    font-size: 0.8rem;
+}
+
+span.aside.no-number:before {
+    content: "";
 }
 
 nav {

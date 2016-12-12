@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Advent of Code, Day 11 </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href='/style.css' type='text/css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300" rel="stylesheet" type="text/css">
+  
+  <script type="text/javascript">
+    window.onload = function() {
+      var mathElements = document.getElementsByClassName("math");
+      for (var i=0; i < mathElements.length; i++) {
+        var texText = mathElements[i].firstChild
+        katex.render(texText.data, mathElements[i])
+      }
+    }
+  </script>
+</head>
+<body>
+  <nav>
+  <ul class='navbar'>
+    <li><a href='/projects.html'>projects</a></li>
+    <li><a href='/about.html'>about</a></li>
+    <li><a href='/archive.html'>archive</a></li>
+    <li><a href='/reading.html'>reading list</a></li>
+  </ul>
+</nav>
+
+  <article>
+    <h1 id="advent-of-code-day-11">Advent of Code, Day 11</h1>
+<p>I've been working through the puzzles for the <a href="http://adventofcode.com">Advent of Code</a>, and they're quite a bit of fun. If you enjoy programming and/or computer science, I would highly recommend trying them out if you haven't already.</p>
+<p>The problems increase in difficulty as Christmas gets nearer. Up to day 11, the have mostly been quick<label class='aside-number'></label> problems that yield to a relatively straightforward ad-hoc algorithm. <span class="aside"> Depending on your level of experience, of course </span> Day 11, though, was quite a bit trickier.</p>
+<p>This post will walk through the solution for the puzzle. Before reading further, take a look at the <a href="http://adventofcode.com/2016/day/11">problem statement</a> if you are not already familiar with it.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>After I first looked at the problem, I realized that I was going to need quite a bit of time to think about it before starting the actual algorithm. Since I was still hoping at the time to make the leaderboard, I decided to postpone the actual algorithm and just work on reading the file to give myself a bit of time to think.</p>
+<p>While parsing the input file doesn't seem terribly interesting, a question that comes up while doing it turns out to be extremely important.</p>
+<p>The sample input for this problem is:</p>
+<pre><code>The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
+The second floor contains a hydrogen generator.
+The third floor contains a lithium generator.
+The fourth floor contains nothing relevant.</code></pre>
+<p>which represents an object distribution like this (courtesy the problem statement):</p>
+<pre><code>F4 .  .  .  .  .
+F3 .  .  .  LG .
+F2 .  HG .  .  .
+F1 E  .  HM .  LM</code></pre>
+<p>where <code>H</code>, <code>L</code>, <code>M</code>, and <code>G</code> represent hydrogen, lithium, microchip, and generator, respectively.</p>
+<p>Since each item is preceding by <code>a</code>, I just split on that, extracted the chips and generators, and processed them separately. If you are interested, my full implementation is <a href="https://github.com/andars/advent-of-code/blob/cfbb8bf7772a503cd799d2976aee66c8422e2ebb/2016/day11/task.rb#L9">here</a>.</p>
+<p>The question that I had while writing this part was whether I needed to preserve the names in the representation of the item distribution. Based on the problem statement, it is clear that we absolutely must give both <code>hydrogen</code> items the same tag and both <code>lithium</code> items the same tag, since a chip of one element is protected by a generator of the same element, but it isn't clear those tags need to be <code>hydrogen</code> and <code>lithium</code>. It turns out that we could just as well call hydrogen <code>1</code> and lithium <code>2</code>, as long as we do it consistently. The interactions between two objects depend on whether they are the same element, but not on their names.</p>
+<p>I ended up keeping the tags as the element names out of convenience, but knowing that the tags don't matter turned out to be important. Keep it in mind.</p>
+<h2 id="finding-the-shortest-path">Finding the Shortest Path</h2>
+<p>Now we must turn to the actual problem, which is to determine the minimum number of moves needed to get all the items to the 4th floor, provided that we must take only legal moves, following the constraints provided.</p>
+<p>If you think about the current item distribution as a start 'position' and the the goal of all items on the top floor as a final 'position', this problem can be seen as finding the shortest path from the start to the finish. The 'distance' is the number of moves that are needed to get from distribution A to distribution B. This characterization suggests that we think about the states of <code>(elevator, distribution)</code> as nodes in a graph, with the edges leaving each node given by the legal moves available at that state.</p>
+<p>At these point, there isn't really a way to get around needing to know some algorithms to find shortest paths. The classic one is <a href="https://en.wikipedia.org/wiki/Dijkstra&#39;s_algorithm">Dijkstra's algorithm</a>, which is general enough for any graph and performs a 'best-first search', where the next best node is determined by the distance alone. However, since every move (and therefore every edge) represents the same distance, we don't need the full generality of Dijkstra's algorithm. In this case of equal edge distances, Dijkstra's reduces to simply <a href="https://en.wikipedia.org/wiki/Breadth-first_search">Breadth first search</a>, which works well for this problem. The important idea is that breadth first search examines all possible states after N moves before examining any after N+1 moves, so it will always find the minimum number of moves first.</p>
+<p>I won't go into detail on breadth first search, but here is the pseudocode for the algorithm to solve the puzzle.</p>
+<pre><code>moves = []
+// (floor, distance, item distribution)
+current_state = (0, 0, item distribution)
+
+while moves isn&#39;t empty:
+    move = moves.pop_front
+    current_state = apply move to current_state
+
+    if current_state has all items on top floor:
+        return distance // second element of current_state
+    else:
+        moves.push_back(possible moves from current_state)</code></pre>
+<p>I know that is pretty abstract, but the implementation is not bad. The possible moves from a given state can be found by listing all the subsets of the set of items on the current floor and choosing to move either up or down, and then eliminating those that result in an illegal state (e.g. one that involves frying some of your microchips or going to floor <code>-1</code>).</p>
+<p>So, we are done, yeah? That wasn't so bad! Pick a language, write some code, and try it.</p>
+<p>Even if you get the implementation working properly, we have a pretty big problem. Sure, this algorithm works, but it will take all day (or maybe even all week) to run. Huh. We need to change something if we want the solution before December 25th.</p>
+<h2 id="cutting-some-branches-part-i">Cutting some Branches, Part I</h2>
+<p>Before we can speed up the algorithm, we need to understand what exactly is happening. How many moves are available at each state? We can either move up a floor or down a floor, so there are two moves. In addition, we must bring with us either 1 or 2 items (due to the elevator's rules). Let's say there are 3 items on the current floor. Then we can pick any one of them (3 possibilities) or any combination of two of them (another 3), for a total of 6 possible choices of items. Combined with the up/down choice, we have 12 possible moves. This number will be decreased by the restrictions on radiation, but not enough to solve our problem. At every state, we will have ~10 moves, resulting in ~10 states after one move. Each of those states will also have ~10 moves, for ~100 states after two moves. Thus exponential growth in possibilities, which doesn't play nicely with finitely fast computers.</p>
+<p>At this point, I modified my program to print out the move queue for each number of moves and took a look at the first few outputs. For the second move, the algorithm considers the possibility of undoing the previous move and returning to the initial state. This is pretty obviously a dumb idea, since going back to where we just where after more moves can't possibly be optimal.</p>
+<p>This brings us to the idea of <em>pruning</em> the search tree. If we know that a certain move is not going to lead us to the optimal solution, we can just discard it completely. This doesn't just save us one move, but all the moves that could be taken from the resulting state, and so on. Therefore this idea is actually a really good one, and it cuts out a significant fraction of the moves that need to be considered.</p>
+<p>In the specific case of this problem, we can disregard all moves that lead back to a state that has already been examined. The implementation of this isn't that bad either. I just kept a hash table with a state as the key and inserted an element every time a state was examined. Then, when adding new moves, I first consulted the <code>visited</code> hash to see if the resulting state already had an entry, and ignored the move if it did.</p>
+<p>Now try writing this up. This modified algorithm probably executes reasonably quickly for the sample input, but is likely still super slow for the full puzzle, depending on your implementation language. Some more work is needed.</p>
+<h2 id="cutting-some-branches-part-ii">Cutting some branches, Part II</h2>
+<p>The idea of pruning moves that lead to previously-visited states is the only one that came to me fairly quickly.</p>
+<p>After thinking for a long time, I returned to the idea discussed above regarding the importance of the tags of the items. As noted, the names don't matter, only whether any two elements represent a pair. Let's consider the initial states of the sample input again. Here it is, for easy reference:</p>
+<pre><code>F4 .  .  .  .  .
+F3 .  .  .  LG .
+F2 .  HG .  .  .
+F1 E  .  HM .  LM</code></pre>
+<p>Since the names are arbitrary and don't matter, the entire state can be represented just by the floor the elevator is on and a list of paired locations. So we can represent this state as:</p>
+<pre><code>{
+    // elevator on first floor
+    elevator: 0,
+
+    // first pair on floors 0 and 1,
+    // second pair on floors 0 and 2
+    pairs: [(0, 1), (0,2)]
+}</code></pre>
+<p>Wait a second. We have lost some information! How are we supposed to know whether the first pair in that list is lithium or hydrogen? From that representation of the state, we could just as well have this state:</p>
+<pre><code>F4 .  .  .  .  .
+F3 .  .  .  HG .
+F2 .  LG .  .  .
+F1 E  .  LM .  HM</code></pre>
+<p>That's clearly different, isn't it?</p>
+<p>But we said before that the names don't matter. What stops us from calling 'lithium' 'hydrogen', and 'hydrogen' 'lithium'?</p>
+<p>Nothing. This state is exactly the same as the first, just with some names mixed up. Follow the same sequence given in the problem statement with lithium and hydrogen switched, and you will again solve the puzzle in 11 moves.</p>
+<p>The simple idea that the names don't matter turns out to be the key to solving the entire puzzle. We have already determined that we shouldn't bother revisiting states that we have previously considered, but at the time I was considering the two states above to be distinct. For all our intents and purposes, having visited the first state is the same as having visited the second, since both require the same number of moves to complete the puzzle.</p>
+<p>With this in mind, I modified my hash table of previously visited states to use the <code>(floor number, list of pairs)</code> representation of the state as the key. Therefore, both of the states above will map to the same entry of the hash table, and we can prune not only moves leading to a state we have seen, but also all states that are the same but with names switched up.</p>
+<p>Using this algorithm, my naive and allocation-happy Ruby code gives the solutions for both parts in around 35 seconds, which is fast enough for me. Tada! Puzzle solved.</p>
+<h2 id="some-notes">Some Notes</h2>
+<p>While I consider the puzzle to be solved at this point, if you want to further improve performance there are additional ideas for pruning in <a href="https://www.reddit.com/r/adventofcode/comments/5hoia9/2016_day_11_solutions/">this reddit thread</a>. Some of them seem reasonable, but I haven't been able to convince myself that some of the suggestions would work for every input.</p>
+<p>If you have any questions, comments, or suggestions regarding this post, you can send me an email (see the about page) or ask a question on <a href="https://www.reddit.com/r/adventofcode/">/r/adventofcode</a>.</p>
+
+  </article>
+</body>
+</html>
